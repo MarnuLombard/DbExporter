@@ -27,12 +27,13 @@ class DbExportHandlerServiceProvider extends ServiceProvider
       /*$this->package('nwidart/db-exporter');*/
 
 	    // As per BarryVDH :
+
 	    // Is it possible to register the config?
 	    if (method_exists($this->app['config'], 'package')) {
-		    $this->app['config']->package('nwidart/db-exporter', __DIR__ . '/../config');
+		    $this->app['config']->package('nwidart/db-exporter', __DIR__ . '/../../config');
 	    } else {
 		    // Load the config for now..
-		    $config = $this->app['files']->getRequire(__DIR__ .'/../config/config.php');
+		    $config = $this->app['files']->getRequire(__DIR__ .'/../../config/config.php');
 		    $this->app['config']->set('nwidart/db-exporter::config', $config);
 	    }
     }
