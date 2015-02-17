@@ -1,14 +1,4 @@
-<?php
-/**
- * DbExporter.
- *
- * @User nicolaswidart
- * @Date 3/01/14
- * @Time 12:50
- *
- */
-
-namespace Nwidart\DbExporter;
+<?php namespace Nwidart\DbExporter;
 
 use Config, DB, Str, File;
 
@@ -80,18 +70,13 @@ class DbSeeding extends DbExporter
             }
             $tableName = $value['table_name'];
             $tableData = $this->getTableData($value['table_name']);
-
             $insertStub = "";
 
             foreach ($tableData as $obj) {
                 $insertStub .= "
             array(\n";
                 foreach ($obj as $prop => $value) {
-                    if (is_numeric($value)) {
-                        $insertStub .= "                '{$prop}' => {$value},\n";
-                    } else {
-                        $insertStub .= "                '{$prop}' => '{$value}',\n";
-                    }
+                    $insertStub .= $this->insertPropertyAndValue($prop, $value);
                 }
 
                 if (count($tableData) > 1) {
@@ -101,15 +86,11 @@ class DbSeeding extends DbExporter
                 }
             }
 
-            if (count($tableData) > 1) {
+            if ($this->hasTableData($tableData)) {
                 $stub .= "
         DB::table('" . $tableName . "')->insert(array(
-                    ".$insertStub."
+            {$insertStub}
         ));";
-            } else {
-                $stub .= "DB::table('" . $tableName . "')->insert(
-                    ".$insertStub."
-        );";
             }
         }
 
@@ -132,5 +113,27 @@ class DbSeeding extends DbExporter
         $template = str_replace('{{run}}', $this->seedingStub, $template);
 
         return $template;
+    }
+
+    private function insertPropertyAndValue($prop, $value)
+    {
+        $prop = addslashes($prop);
+        $value = addslashes($value);
+        if (is_numeric($value)) {
+            return "                '{$prop}' => {$value},\n";
+        } elseif($value == '') {
+            return "                '{$prop}' => NULL,\n";
+        } else {
+            return "                '{$prop}' => '{$value}',\n";
+        }
+    }
+
+    /**
+     * @param $tableData
+     * @return bool
+     */
+    public function hasTableData($tableData)
+    {
+        return count($tableData) >= 1;
     }
 }

@@ -1,16 +1,5 @@
-<?php
-/**
- * DbExporter.
- *
- * @User nicolaswidart
- * @Date 2/01/14
- * @Time 14:21
- *
- */
+<?php namespace Nwidart\DbExporter;
 
-namespace Nwidart\DbExporter;
-
-use DB;
 use Config;
 use File;
 use Nwidart\DbExporter\Exceptions\InvalidDatabaseException;
@@ -65,7 +54,7 @@ class DbMigrations extends DbExporter
         $filename = date('Y_m_d_His') . "_create_" . $this->database . "_database.php";
         self::$filePath = Config::get('db-exporter::export_path.migrations')."{$filename}";
 
-        file_put_contents(self::$filePath."{$filename}", $schema);
+        file_put_contents(self::$filePath, $schema);
 
         return self::$filePath;
     }
@@ -95,11 +84,6 @@ class DbMigrations extends DbExporter
             $down = "Schema::drop('{$value['table_name']}');";
             $up = "Schema::create('{$value['table_name']}', function($" . "table) {\n";
 
-            $tableIndexes = $this->getTableIndexes($value['table_name']);
-            foreach ($tableIndexes as $index) {
-                $up .= '                $' . "table->index('" . $index['Key_name'] . "');\n";
-            }
-
             $tableDescribes = $this->getTableDescribes($value['table_name']);
             // Loop over the tables fields
             foreach ($tableDescribes as $values) {
@@ -114,6 +98,9 @@ class DbMigrations extends DbExporter
                 switch ($type) {
                     case 'int' :
                         $method = 'integer';
+                        break;
+                    case 'smallint' :
+                        $method = 'smallInteger';
                         break;
                     case 'bigint' :
                         $method = 'bigInteger';
@@ -158,6 +145,7 @@ class DbMigrations extends DbExporter
                     case 'text' :
                         $method = 'text';
                         break;
+                    case 'longblob':
                     case 'blob' :
                         $method = 'binary';
                         break;
@@ -175,6 +163,14 @@ class DbMigrations extends DbExporter
 
                 $up .= "                $" . "table->{$method}('{$values->Field}'{$numbers}){$nullable}{$default}{$unsigned};\n";
             }
+
+            $tableIndexes = $this->getTableIndexes($value['table_name']);
+            if (!is_null($tableIndexes) && count($tableIndexes)){
+            	foreach ($tableIndexes as $index) {
+                	$up .= '                $' . "table->index('" . $index['Key_name'] . "');\n";
+            	}
+        	}
+
             $up .= "            });\n\n";
 
             $this->schema[$value['table_name']] = array(
@@ -196,19 +192,22 @@ class DbMigrations extends DbExporter
         $upSchema = "";
         $downSchema = "";
 
-        foreach ($this->schema as $name => $values) {
-            // check again for ignored tables
-            if (in_array($name, self::$ignore)) {
-                continue;
-            }
-            $upSchema .= "
-             /**
-             * Table: {$name}
-             */
-            {$values['up']}";
+        // prevent of failure when no table
+        if (!is_null($this->schema) && count($this->schema)) {
+	        foreach ($this->schema as $name => $values) {
+	            // check again for ignored tables
+	            if (in_array($name, self::$ignore)) {
+	                continue;
+	            }
+	            $upSchema .= "
+	    /**
+	     * Table: {$name}
+	     */
+	    {$values['up']}";
 
-            $downSchema .= "
-            {$values['down']}";
+	            $downSchema .= "
+	            {$values['down']}";
+	        }
         }
 
         // Grab the template

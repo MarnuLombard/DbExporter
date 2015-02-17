@@ -1,14 +1,4 @@
-<?php
-/**
- * DbExporter.
- *
- * @User nicolaswidart
- * @Date 3/01/14
- * @Time 12:55
- *
- */
-
-namespace Nwidart\DbExporter;
+<?php namespace Nwidart\DbExporter;
 
 class DbExportHandler
 {
@@ -90,6 +80,13 @@ class DbExportHandler
     public function getMigrationsFilePath()
     {
         return DbMigrations::$filePath;
+    }
+
+    public function uploadTo($remote)
+    {
+        DbExporter::$remote = $remote;
+
+        return $this;
     }
 
 }

@@ -1,14 +1,4 @@
-<?php
-/**
- * DbExporter.
- *
- * @User nicolaswidart
- * @Date 3/01/14
- * @Time 20:44
- *
- */
-
-namespace Nwidart\DbExporter;
+<?php namespace Nwidart\DbExporter;
 
 use DB;
 
@@ -19,6 +9,7 @@ abstract class DbExporter
      * @var array $ignore
      */
     public static $ignore = array('migrations');
+    public static $remote;
 
     /**
      * Get all the tables

@@ -1,19 +1,23 @@
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/nWidart/DbExporter/badges/quality-score.png?s=7bd2e14ca4097b979efa1d0d558c3ae17dd870bf)](https://scrutinizer-ci.com/g/nWidart/DbExporter/)
+[![Latest Stable Version](https://poser.pugx.org/nwidart/db-exporter/v/stable.svg)](https://packagist.org/packages/nwidart/db-exporter) [![Total Downloads](https://poser.pugx.org/nwidart/db-exporter/downloads.svg)](https://packagist.org/packages/nwidart/db-exporter) [![Latest Unstable Version](https://poser.pugx.org/nwidart/db-exporter/v/unstable.svg)](https://packagist.org/packages/nwidart/db-exporter) [![License](https://poser.pugx.org/nwidart/db-exporter/license.svg)](https://packagist.org/packages/nwidart/db-exporter)
 
 # Database Exporter
 
 Export your database quickly and easily as a Laravel Migration and all the data as a Seeder class. This can be done via artisan commands or a controller action.
 
+
+Please note that I've only tested this package on a **MySQL** database. It has been confirmed it does not work with [Postgres](https://github.com/nWidart/DbExporter/issues/17#issuecomment-56990481).
+
 ## Installation
 
 Add `"nwidart/db-exporter"`* as a requirement to `composer.json`:
 
-```
+```php
 {
     ...
     "require": {
         ...
-		"nwidart/db-exporter": "dev-master"
+		"nwidart/db-exporter": "1.0"
     },
 }
 
@@ -27,7 +31,7 @@ $ php composer.phar update
 
 Add the service provider to `app/config/app.php`:
 
-```
+```php
 'Nwidart\DbExporter\DbExportHandlerServiceProvider'
 ```
 
@@ -37,7 +41,7 @@ Add the service provider to `app/config/app.php`:
 php artisan config:publish nwidart/db-exporter
 ```
 
-**Use `dev-master` as version requirement to be on the cutting edge*
+*Use `dev-master` as version requirement to be on the cutting edge*
 
 
 ## Documentation
@@ -76,9 +80,9 @@ php artisan dbe:seeds
 
 
 #### Uploading migrations/seeds to remote server
-**!! Important** *This requires your app/config/remote.php to be configured. *
+**Important: This requires your app/config/remote.php to be configured.**
 
-**!! Important** *The package configuration **remote** key needs to be configured to correspond to your remotes directory structure.*
+**Important: The package configuration remote key needs to be configured to correspond to your remotes directory structure.**
 
 
 You can with the following command, upload migrations and / or seeds to a remote host with `php artisan dbe:remote remoteName [--migrations] [--seeds]`
@@ -112,7 +116,7 @@ php artisan dbe:remote production --migrations --seeds
 
 Make a export route on your development environment
 
-```
+```php
 
 Route::get('export', function()
 {
@@ -122,7 +126,7 @@ Route::get('export', function()
 
 ##### Export a custom database
 
-```
+```php
 
 Route::get('export', function()
 {
@@ -135,16 +139,20 @@ Route::get('export', function()
 
 This will write a seeder class with all the data of the current database.
 
-```
+```php
 
 Route::get('exportSeed', function()
 {
     DbExportHandler::seed();
 });
 ```
+
 Next all you have to do is add the call method on the base seed class:
-```
+
+```php
+
 $this->call('nameOfYourSeedClass');
+
 ```
 
 Now you can run from the commmand line:
@@ -155,26 +163,32 @@ Now you can run from the commmand line:
 #### Chaining
 You can also combine the generation of the migrations & the seed:
 
-```
+```php
+
 DbExportHandler::migrate()->seed();
+
 ```
 Or with:
 
-```
+```php
+
 DbExportHandler::migrateAndSeed();
+
 ```
-**!! Important :** Please note you cannot set a external seed database.
+**Important :** Please note you cannot set a external seed database.
 If you know of a way to connect to a external DB with laravel without writing in the app/database.php file [let me know](http://www.twitter.com/nicolaswidart).
 
 
 #### Ignoring tables
 By default the migrations table is ignored. You can add tabled to ignore with the following syntax:
 
-```
+```php
+
 DbExportHandler::ignore('tableToIgnore')->migrate();
 DbExportHandler::ignore('tableToIgnore')->seed();
+
 ```
-You can also send an array of tables to ignore.
+You can also pass an array of tables to ignore.
 
 
 
@@ -200,3 +214,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="YM9989P76FHPE">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+
